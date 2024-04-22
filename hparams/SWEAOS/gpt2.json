@@ -1,0 +1,14 @@
+{
+    "clamp_norm_factor": 0.75,
+    "fact_token": "subject_last",
+    "v_num_grad_steps": 25,
+    "v_lr": 5e-2,
+    "v_loss_layer_name": "transformer.h.11",
+    "v_weight_decay": 0.3,
+    "kl_factor": 0.625,
+    "embedding_module": "model.embed_tokens",
+    "ln_f_module": "model.norm",
+    "lm_head_module": "lm_head",
+    "mode": "kn",
+    "kn_hparams": ["coarse_adaptive_threshold", "0.1"]
+}

@@ -1,0 +1,15 @@
+datasets
+jsonlines
+matplotlib
+nltk
+numpy
+omegaconf
+qwikidata
+Requests
+torch
+tqdm
+transformers
+tokenizers
+scipy
+scikit-learn==1.0.2
+einops

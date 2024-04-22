@@ -1,0 +1,1 @@
+python -m rippleedits.filter_benchmark_by_model --benchmark ./data/ripple_benchmark/random.json  --model Llama-2-7b-hf --output Llama-2-7b-random.json

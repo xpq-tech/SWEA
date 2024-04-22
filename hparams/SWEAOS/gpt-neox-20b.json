@@ -1,0 +1,16 @@
+{
+    "clamp_norm_factor": 1,
+    "layer_selection": "all",
+    "fact_token": "subject_last",
+    "v_num_grad_steps": 25,
+    "v_lr": 5e-1,
+    "v_loss_layer_name": "gpt_neox.layers.43",
+    "v_weight_decay": 0.5,
+    "kl_factor": 0.8,
+    "ln_f_module": "gpt_neox.final_layer_norm",
+    "lm_head_module": "embed_out",
+    "mode": "kn+optimize",
+    "nll_loss_factor": 1,
+    "embedding_module": "gpt_neox.embed_in",
+    "kn_hparams": ["cat", "0.35", "0"] 
+}

@@ -1,0 +1,15 @@
+{
+    "clamp_norm_factor":1,
+    "fact_token": "subject_last",
+    "v_num_grad_steps": 40,
+    "v_lr": 2e-2,
+    "v_loss_layer_name": "model.layers.31",
+    "v_weight_decay": 0.3,
+    "kl_factor": 0.3,
+    "nll_loss_factor": 1,
+    "embedding_module": "model.embed_tokens",
+    "ln_f_module": "model.norm",
+    "lm_head_module": "lm_head",
+    "mode": "kn+optimize",
+    "kn_hparams": ["cat", "0.35", "0"] 
+}
