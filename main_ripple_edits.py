@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 from rippleedits.benchmark import Dataset, Example, TestsAxis
-from rippleedits.modeleditor import ROMEModelEditor, InContextModelEditor, MENDModelEditor, MEMITModelEditor, SWEAOSModelEditor, PMETModelEditor
+from rippleedits.modeleditor import ROMEModelEditor, InContextModelEditor, GRACEModelEditor, MEMITModelEditor, SWEAOSModelEditor, PMETModelEditor
 from rippleedits.queryexecutor import GPT2QueryExecutor, GPT3QueryExecutor, GPTJQueryExecutor, GPTNeoXQueryExecutor, \
     LlamaQueryExecutor, Llama2QueryExecutor
 from rippleedits.testrunner import ExampleResult
@@ -77,26 +77,25 @@ if __name__ == '__main__':
         # 'gpt2-medium',
         # 'gpt2-large',
         # 'gpt2-xl',
-        # 'gpt-j',
+        'gpt-j',
         # 'gpt-neo',
         # 'llama'
-        'Llama-2'
+        # 'Llama-2'
     ]
 
     editors = [
-        # 'mend',
         # 'rome',
         # 'memit',
-        # 'in-context',
-        'SWEAOS'
+        'grace',
+        # 'SWEAOS'
         # 'pmet'
     ]
-    data_dir = './data/ripple_benchmark/'
+    data_dir = './ripple_benchmark/'
     # recently_modified_path = data_dir + 'recent.json'
-    fake_facts_path = data_dir + 'Llama-2-7b-random.json'
-    top_views_path = data_dir + 'Llama-2-7b-popular.json'
-    # fake_facts_path = data_dir + 'gpt-j-random.json'
-    # top_views_path = data_dir + 'gpt-j-popular.json'
+    # fake_facts_path = data_dir + 'Llama-2-7b-random.json'
+    # top_views_path = data_dir + 'Llama-2-7b-popular.json'
+    fake_facts_path = data_dir + 'gpt-j-random.json'
+    top_views_path = data_dir + 'gpt-j-popular.json'
 
     datasets = [
         # recently_modified_path,
@@ -134,8 +133,8 @@ if __name__ == '__main__':
                 if model == 'Llama-2':
                     query_executor = Llama2QueryExecutor()
 
-                if editor == 'mend':
-                    model_editor = MENDModelEditor(query_executor)
+                if editor == 'grace':
+                    model_editor = GRACEModelEditor(query_executor)
                 if editor == 'rome':
                     model_editor = ROMEModelEditor(query_executor)
                 if editor == 'memit':

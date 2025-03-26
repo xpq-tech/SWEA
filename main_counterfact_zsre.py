@@ -14,15 +14,15 @@ from dsets import (
     CounterFactDataset,
     MENDQADataset,
     MultiCounterFactDataset,
-    get_tfidf_vectorizer,
-    CounterFact_IKDataset
+    get_tfidf_vectorizer
 )
-from utils.eval_utils.eval_utils_counterfact import compute_rewrite_quality_counterfact, compute_rewrite_quality_counterfact_IK
+from utils.eval_utils.eval_utils_counterfact import compute_rewrite_quality_counterfact
 from utils.eval_utils.eval_utils_zsre import compute_rewrite_quality_zsre
 from SWEAOS import SWEAOSHyperParams, apply_SWEAOS_to_model
 from memit import MEMITHyperParams, apply_memit_to_model
 from pmet import PMETHyperParams, apply_pmet_to_model
 from rome import ROMEHyperParams, apply_rome_to_model
+from grace import GraceHyperParams, apply_grace_to_model
 from utils import nethook
 from utils.globals import *
 
@@ -31,12 +31,11 @@ ALG_DICT = {
     "PMET": (PMETHyperParams, apply_pmet_to_model),
     "ROME": (ROMEHyperParams, apply_rome_to_model),
     "FT": (FTHyperParams, apply_ft_to_model),
-    "SWEAOS": (SWEAOSHyperParams, apply_SWEAOS_to_model)
-    # "MEND": (MENDHyperParams, MendRewriteExecutor().apply_to_model),
+    "SWEAOS": (SWEAOSHyperParams, apply_SWEAOS_to_model),
+    "GRACE": (GraceHyperParams, apply_grace_to_model),
 }
 
 DS_DICT = {
-    "mcf_IK": (CounterFact_IKDataset, compute_rewrite_quality_counterfact_IK),
     "mcf": (MultiCounterFactDataset, compute_rewrite_quality_counterfact),
     "cf": (CounterFactDataset, compute_rewrite_quality_counterfact),
     "zsre": (MENDQADataset, compute_rewrite_quality_zsre),
@@ -96,32 +95,29 @@ def main(
 
     # Instantiate vanilla model
     non_space_tok = None
-    if type(model_name) is str:
-        if model_path:
-            print(f"Instantiating model: {model_name} from {model_path}")
-            if "neox" in model_name:
-                model = AutoModelForCausalLM.from_pretrained(model_path + model_name).half().cuda()
-            else:
-                model = AutoModelForCausalLM.from_pretrained(model_path + model_name).cuda()
-            if "gpt" in model_name:
-                tok = AutoTokenizer.from_pretrained(model_path + model_name, add_prefix_space=True) # Make sure the token ids with spaces and without spaces are the same in GPT tokenizer
-                non_space_tok = AutoTokenizer.from_pretrained(model_path + model_name)
-                non_space_tok.pad_token = non_space_tok.eos_token
-            else:
-                tok = AutoTokenizer.from_pretrained(model_path + model_name)
+    if model_path:
+        print(f"Instantiating model: {model_name} from {model_path}")
+        if "neox" in model_name:
+            model = AutoModelForCausalLM.from_pretrained(model_path + model_name).half().cuda()
         else:
-            print(f"Instantiating model: {model_name}")
-            model = AutoModelForCausalLM.from_pretrained(model_name).cuda()
-            if "gpt" in model_name:
-                tok = AutoTokenizer.from_pretrained(model_name, add_prefix_space=True) # Make sure the token ids with spaces and without spaces are the same in GPT tokenizer
-                non_space_tok = AutoTokenizer.from_pretrained(model_name)
-                non_space_tok.pad_token = non_space_tok.eos_token
-            else:
-                tok = AutoTokenizer.from_pretrained(model_name)
-        tok.pad_token = tok.eos_token
+            model = AutoModelForCausalLM.from_pretrained(model_path + model_name).cuda()
+        if "gpt" in model_name:
+            tok = AutoTokenizer.from_pretrained(model_path + model_name, add_prefix_space=True) # Make sure the token ids with spaces and without spaces are the same in GPT tokenizer
+            non_space_tok = AutoTokenizer.from_pretrained(model_path + model_name)
+            non_space_tok.pad_token = non_space_tok.eos_token
+        else:
+            tok = AutoTokenizer.from_pretrained(model_path + model_name, )
     else:
-        model, tok = model_name
-        model_name = model.config._name_or_path
+        print(f"Instantiating model: {model_name}")
+        model = AutoModelForCausalLM.from_pretrained(model_name).cuda()
+        if "gpt" in model_name:
+            tok = AutoTokenizer.from_pretrained(model_name, add_prefix_space=True) # Make sure the token ids with spaces and without spaces are the same in GPT tokenizer
+            non_space_tok = AutoTokenizer.from_pretrained(model_name)
+            non_space_tok.pad_token = non_space_tok.eos_token
+        else:
+            tok = AutoTokenizer.from_pretrained(model_name)
+    tok.add_bos_token = False
+    tok.pad_token_id = tok.eos_token_id
     # Load data
     print("Loading dataset, attribute snippets, tf-idf data")
     snips = AttributeSnippets(DATA_DIR) if not skip_generation_tests else None
@@ -285,8 +281,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--alg_name",
-        choices=["MEMIT", "ROME", "FT", "MEND", "PMET", "SWEAOS"],
-        default="SWEAOS",
+        choices=["MEMIT", "ROME", "FT", "MEND", "PMET","GRACE", "SWEAOS"],
+        default="GRACE",
         help="Editing algorithm to use. Results are saved in results/<alg_name>/<run_id>, "
         "where a new run_id is generated on each run. "
         "If continuing from previous run, specify the run_id in --continue_from_run.",
@@ -298,7 +294,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--model_name",
-        choices=["EleutherAI/gpt-neox-20b", "EleutherAI/gpt-j-6b","Llama-2-7b-hf", "gpt2"],
+        choices=["EleutherAI/gpt-j-6b","Llama-2-7b-hf"],
         default="Llama-2-7b-hf",
         help="Model to edit.",
         required=False,
@@ -312,8 +308,8 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--ds_name",
-        choices=["mcf", "cf", "zsre", "mcf_IK"],
-        default="mcf",
+        choices=["mcf", "cf", "zsre"],
+        default="zsre",
         help="Dataset to perform evaluations on. Either CounterFact (cf), MultiCounterFact (mcf), or zsRE (zsre).",
     )
     parser.add_argument(
@@ -338,7 +334,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--generation_test_interval",
         type=int,
-        default=10,
+        default=-1,
         help="One generation test is performed every [flag_value] iterations. If -1, generation tests are skipped.",
     )
     parser.add_argument(
@@ -351,14 +347,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num_edits",
         type=int,
-        default=10,
+        default=1,
         help="Number of rewrites to perform simultaneously.",
     )
     parser.add_argument(
         "--use_cache",
         dest="use_cache",
         action="store_true",
-        default=True,
+        default=False,
         help="Use cached k/v pairs",
     )
     parser.set_defaults(skip_generation_tests=False, conserve_memory=False)

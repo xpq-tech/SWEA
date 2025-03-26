@@ -42,29 +42,6 @@ class CounterFactDataset(Dataset):
     def __getitem__(self, item):
         return self.data[item]
 
-class CounterFact_IKDataset(Dataset):
-    def __init__(
-        self,
-        data_dir: str,
-        multi: bool = False,
-        size: typing.Optional[int] = None,
-        *args,
-        **kwargs,
-    ):
-        data_dir = Path(data_dir)
-        cf_loc = data_dir / "multi_counterfact_IK.json"
-        with open(cf_loc, "r") as f:
-            self.data = json.load(f)
-        if size is not None:
-            self.data = self.data[:size]
-
-        print(f"Loaded dataset with {len(self)} elements")
-
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, item):
-        return self.data[item]
 
 class MultiCounterFactDataset(CounterFactDataset):
     def __init__(

@@ -56,6 +56,7 @@ class QueryExecutor:
 class HFQueryExecutor(QueryExecutor):
 
     def __init__(self, model=None, tokenizer=None, device=None, send_to_device=True):
+        tokenizer.add_bos_token = False
         super().__init__(model, tokenizer, device, send_to_device)
 
     def get_model_name(self):

@@ -5,7 +5,8 @@ __pycache__/
 
 # C extensions
 *.so
-
+data
+wikidata
 # Distribution / packaging
 .Python
 build/
@@ -31,8 +32,6 @@ stats
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
-data/
-ent_label2id.json
 
 # Installer logs
 pip-log.txt

@@ -8,7 +8,7 @@ from utils.globals import KV_DIR
 from rome import ROMEHyperParams, apply_rome_to_model
 from memit import MEMITHyperParams, apply_memit_to_model
 from pmet import PMETHyperParams, apply_pmet_to_model
-from baselines.mend import MENDHyperParams, MendRewriteExecutor
+from grace import GraceHyperParams, apply_grace_to_model
 from utils import nethook
 
 class ModelEditor:
@@ -113,16 +113,19 @@ class ROMEModelEditor(RomeStyleModelEditor):
         _, self._changed_weights = apply_rome_to_model(self._model, self._tokenizer, requests, hparams, return_orig_weights=True)
 
 
-class MENDModelEditor(RomeStyleModelEditor):
+class GRACEModelEditor(RomeStyleModelEditor):
 
     def __init__(self, query_executor):
         super().__init__(query_executor)
 
     def edit_model(self, fact):
         requests = self._format_fact_for_rome(fact)
-        hparams = MENDHyperParams.from_json(f'hparams/MEND/{self._model_name}.json')
-        _, self._changed_weights = MendRewriteExecutor().apply_to_model(self._model, self._tokenizer, requests, hparams, return_orig_weights=True)
+        hparams = GraceHyperParams.from_json(f'hparams/GRACE/{self._model_name}.json')
+        _, self._changed_weights = apply_grace_to_model(self._model, self._tokenizer, requests, hparams, keep_original_weight=True)
 
+    def restore_model(self):
+        self._changed_weights()
+        # self._model = 
 class SWEAOSModelEditor(RomeStyleModelEditor):
 
     def __init__(self, query_executor):

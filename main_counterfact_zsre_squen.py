@@ -36,7 +36,6 @@ ALG_DICT = {
 }
 
 DS_DICT = {
-    "mcf_IK": (CounterFact_IKDataset, compute_rewrite_quality_counterfact_IK),
     "mcf": (MultiCounterFactDataset, compute_rewrite_quality_counterfact),
     "cf": (CounterFactDataset, compute_rewrite_quality_counterfact),
     "zsre": (MENDQADataset, compute_rewrite_quality_zsre),
