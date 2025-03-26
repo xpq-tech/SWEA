@@ -15,9 +15,9 @@ from dsets import (
     MENDQADataset,
     MultiCounterFactDataset,
     get_tfidf_vectorizer,
-    CounterFact_IKDataset
+
 )
-from utils.eval_utils.eval_utils_counterfact import compute_rewrite_quality_counterfact, compute_rewrite_quality_counterfact_IK
+from utils.eval_utils.eval_utils_counterfact import compute_rewrite_quality_counterfact
 from utils.eval_utils.eval_utils_zsre import compute_rewrite_quality_zsre
 from SWEAOS import SWEAOSHyperParams, apply_SWEAOS_to_model, SWEA
 from memit import MEMITHyperParams, apply_memit_to_model
@@ -47,13 +47,11 @@ def main(
     model_name: Union[str, Tuple],
     hparams_fname: str,
     ds_name: str,
-    dataset_size_limit: int,
     continue_from_run: str,
     skip_generation_tests: bool,
     generation_test_interval: int,
     conserve_memory: bool,
     dir_name: str,
-    num_edits: int = 1,
     use_cache: bool = False,
     model_path: str = None
 ):
@@ -126,6 +124,8 @@ def main(
         model, tok = model_name
         model_name = model.config._name_or_path
     # Load data
+    tok.add_bos_token = False
+    tok.pad_token_id = tok.eos_token_id
     print("Loading dataset, attribute snippets, tf-idf data")
     snips = AttributeSnippets(DATA_DIR) if not skip_generation_tests else None
     vec = get_tfidf_vectorizer(DATA_DIR) if not skip_generation_tests else None
@@ -338,12 +338,7 @@ if __name__ == "__main__":
         default=None,
         help="If continuing from previous run, set to run_id. Otherwise, leave as None.",
     )
-    parser.add_argument(
-        "--dataset_size_limit",
-        default=10000,
-        type=int,
-        help="Truncate CounterFact to first n records.",
-    )
+
     parser.add_argument(
         "--skip_generation_tests",
         dest="skip_generation_tests",
@@ -365,12 +360,6 @@ if __name__ == "__main__":
         "Backs up model weights on CPU instead of GPU.",
     )
     parser.add_argument(
-        "--num_edits",
-        type=int,
-        default=10,
-        help="Number of rewrites to perform simultaneously.",
-    )
-    parser.add_argument(
         "--use_cache",
         dest="use_cache",
         action="store_true",
@@ -385,13 +374,11 @@ if __name__ == "__main__":
         args.model_name,
         args.hparams_fname,
         args.ds_name,
-        args.dataset_size_limit,
         args.continue_from_run,
         args.skip_generation_tests,
         args.generation_test_interval,
         args.conserve_memory,
         dir_name=args.alg_name,
-        num_edits=args.num_edits,
         use_cache=args.use_cache,
         model_path = args.model_path
     )

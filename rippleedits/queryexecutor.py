@@ -89,14 +89,14 @@ class GPTJQueryExecutor(HFQueryExecutor):
 
     def __init__(self, device=None, model=None, tokenizer=None):
         if tokenizer is None:
-            tokenizer = AutoTokenizer.from_pretrained('../ptms/EleutherAI/gpt-j-6b', add_prefix_space=True)
+            tokenizer = AutoTokenizer.from_pretrained('/science/llms/EleutherAI/gpt-j-6b', add_prefix_space=True)
             tokenizer.pad_token = tokenizer.eos_token
         if model is None:
-            model = GPTJForCausalLM.from_pretrained('../ptms/EleutherAI/gpt-j-6b', pad_token_id=tokenizer.eos_token_id)
+            model = GPTJForCausalLM.from_pretrained('/science/llms/EleutherAI/gpt-j-6b', pad_token_id=tokenizer.eos_token_id)
         super().__init__(model, tokenizer, device)
 
     def get_model_name(self):
-        return 'EleutherAI_gpt-j-6B'
+        return 'EleutherAI_gpt-j-6b'
 
 
 class GPTNeoXQueryExecutor(HFQueryExecutor):

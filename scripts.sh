@@ -7,4 +7,8 @@
 # CUDA_VISIBLE_DEVICES=3 nohup python main_counterfact_zsre.py --alg_name GRACE --ds_name zsre --model_name Llama-2-7b-hf --hparams_fname Llama-2-7b-hf.json --num_edits 10000 --dataset_size_limit 10000 > logs/grace_llama2_zsre.log &
 
 
-CUDA_VISIBLE_DEVICES=2 nohup python main_ripple_edits.py > logs/grace_gptj_ripple.log &
+CUDA_VISIBLE_DEVICES=2 python main_ripple_edits.py
+
+CUDA_VISIBLE_DEVICES=3 python main_counterfact_zsre.py --alg_name SWEAOS --ds_name zsre --model_path ../../llms/ --model_name Llama-2-7b-hf --hparams_fname Llama-2-7b-hf.json --num_edits 10000 --dataset_size_limit 10000
+
+CUDA_VISIBLE_DEVICES=3 python main_counterfact_zsre_squen.py --alg_name SWEAOS --ds_name zsre --model_path ../../llms/ --model_name Llama-2-7b-hf --hparams_fname Llama-2-7b-hf.json 

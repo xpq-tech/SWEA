@@ -86,8 +86,8 @@ if __name__ == '__main__':
     editors = [
         # 'rome',
         # 'memit',
-        'grace',
-        # 'SWEAOS'
+        # 'grace',
+        'SWEAOS'
         # 'pmet'
     ]
     data_dir = './ripple_benchmark/'
