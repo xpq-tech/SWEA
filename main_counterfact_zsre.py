@@ -132,6 +132,10 @@ def main(
     # Get cache templates
     cache_template = None
     optimize_cache_template = None
+    if alg_name == "SWEAOS":
+        use_cache = True #use_cache is needed beacause SWEAOS needs to cache editing embeddings
+    else:
+        use_cache = False
     if use_cache:
         if alg_name == 'SWEAOS':
             if hparams.mode == 'kn+optimize':
